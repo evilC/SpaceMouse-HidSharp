@@ -8,13 +8,14 @@ namespace SpaceMouse_HidSharp
 {
     public class UpdateProcessor
     {
+        private const int ByteCount = 7;
         private readonly byte[][] _previousStates = new byte[4][];
 
-        public SpaceMouseUpdate[] ProcessUpdate(byte[] inputReportBuffer, int byteCount)
+        public SpaceMouseUpdate[] ProcessUpdate(byte[] inputReportBuffer)
         {
             var updates = new List<SpaceMouseUpdate>();
 
-            var bytes = inputReportBuffer.Take(byteCount).ToArray();
+            var bytes = inputReportBuffer.Take(ByteCount).ToArray();
             switch (bytes[0])
             {
                 case 1:
@@ -29,7 +30,7 @@ namespace SpaceMouse_HidSharp
                     break;
                 case 3:
                     // Buttons
-                    string hexOfBytes = string.Join(" ", inputReportBuffer.Take(byteCount).Select(b => b.ToString("X2")));
+                    string hexOfBytes = string.Join(" ", inputReportBuffer.Take(ByteCount).Select(b => b.ToString("X2")));
                     Console.WriteLine($"Bytes: {hexOfBytes}");
                     break;
             }

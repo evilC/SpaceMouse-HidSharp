@@ -90,7 +90,7 @@ namespace SpaceMouse_HidSharp
 
                                     if (byteCount > 0)
                                     {
-                                        var updates = _updateProcessor.ProcessUpdate(inputReportBuffer, byteCount);
+                                        var updates = _updateProcessor.ProcessUpdate(inputReportBuffer);
                                         if (updates == null) continue;
                                         foreach (var update in updates)
                                         {
