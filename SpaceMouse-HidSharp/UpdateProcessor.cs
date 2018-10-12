@@ -16,24 +16,30 @@ namespace SpaceMouse_HidSharp
             var updates = new List<SpaceMouseUpdate>();
 
             var bytes = inputReportBuffer.Take(ByteCount).ToArray();
-            switch (bytes[0])
+            if (bytes[0] == 3)
             {
-                case 1:
-                case 2:
-                    // Axes
-                    for (var i = 0; i < 3; i++)
-                    {
-                        var value = GetAxisValue(bytes, i);
-                        if (value == null) continue;
-                        updates.Add(new SpaceMouseUpdate { BindingType = BindingType.Axis, Index = i + 2, Value = (int)value});
-                    }
-                    break;
-                case 3:
-                    // Buttons
-                    string hexOfBytes = string.Join(" ", inputReportBuffer.Take(ByteCount).Select(b => b.ToString("X2")));
-                    Console.WriteLine($"Bytes: {hexOfBytes}");
-                    break;
+                // Buttons
+                string hexOfBytes = string.Join(" ", inputReportBuffer.Take(ByteCount).Select(b => b.ToString("X2")));
+                Console.WriteLine($"Bytes: {hexOfBytes}");
             }
+            else
+            {
+                // Axes
+                var isRotation = bytes[0] == 2;
+                var offset = isRotation ? 3 : 0;
+                for (var i = 0; i < 3; i++)
+                {
+                    var value = GetAxisValue(bytes, i);
+                    if (value == null) continue;
+                    updates.Add(new SpaceMouseUpdate
+                    {
+                        BindingType = BindingType.Axis,
+                        Index = offset + i,
+                        Value = (int)value
+                    });
+                }
+            }
+
             _previousStates[bytes[0]] = inputReportBuffer.ToArray(); // array is reference type, clone!
             return updates.ToArray();
         }
