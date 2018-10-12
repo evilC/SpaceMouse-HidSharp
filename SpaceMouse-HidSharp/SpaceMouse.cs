@@ -32,6 +32,7 @@ namespace SpaceMouse_HidSharp
     public class SpaceMouse
     {
         private readonly HidDevice[] _hidDeviceList;
+        private readonly UpdateProcessor _updateProcessor = new UpdateProcessor();
 
         public SpaceMouse()
         {
@@ -89,14 +90,15 @@ namespace SpaceMouse_HidSharp
 
                                     if (byteCount > 0)
                                     {
+                                        var updates = _updateProcessor.ProcessUpdate(inputReportBuffer, byteCount);
                                         //string hexOfBytes = string.Join(" ", inputReportBuffer.Take(byteCount).Select(b => b.ToString("X2")));
-                                        var hexOfBytes = "";
-                                        var blah = inputReportBuffer.Take(byteCount);
-                                        foreach (var foo in blah)
-                                        {
-                                            hexOfBytes += foo.ToString("X2") + " ";
-                                        }
-                                        Console.WriteLine("  {0}", hexOfBytes);
+                                        //var hexOfBytes = "";
+                                        //var blah = inputReportBuffer.Take(byteCount);
+                                        //foreach (var foo in blah)
+                                        //{
+                                        //    hexOfBytes += foo.ToString("X2") + " ";
+                                        //}
+                                        //Console.WriteLine("  {0}", hexOfBytes);
                                     }
                                 }
                                 else
