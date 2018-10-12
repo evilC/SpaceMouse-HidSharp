@@ -12,8 +12,8 @@ namespace SpaceMouse_HidSharp
 
         public SpaceMouseUpdate[] ProcessUpdate(byte[] inputReportBuffer, int byteCount)
         {
-            string hexOfBytes = string.Join(" ", inputReportBuffer.Take(byteCount).Select(b => b.ToString("X2")));
-            Console.WriteLine($"Bytes: {hexOfBytes}");
+            //string hexOfBytes = string.Join(" ", inputReportBuffer.Take(byteCount).Select(b => b.ToString("X2")));
+            //Console.WriteLine($"Bytes: {hexOfBytes}");
             var updates = new List<SpaceMouseUpdate>();
 
             var bytes = inputReportBuffer.Take(byteCount).ToArray();
@@ -23,8 +23,9 @@ namespace SpaceMouse_HidSharp
                     // Translation
                     for (var i = 0; i < 3; i++)
                     {
-                        if (!AxisChanged(bytes, i)) continue;
-                        Console.WriteLine($"Translation {i} changed");
+                        var value = GetAxisValue(bytes, i);
+                        if (value == null) continue;
+                        Console.WriteLine($"Translation {i} changed to {value}");
                         updates.Add(new SpaceMouseUpdate{BindingType = BindingType.Axis, Index = i});   // ToDo: Add value
                     }
                     break;
@@ -32,8 +33,9 @@ namespace SpaceMouse_HidSharp
                     // Rotation
                     for (var i = 0; i < 3; i++)
                     {
-                        if (!AxisChanged(bytes, i)) continue;
-                        Console.WriteLine($"Roatation {i} changed");
+                        var value = GetAxisValue(bytes, i);
+                        if (value == null) continue;
+                        Console.WriteLine($"Roatation {i} changed to {value}");
                         updates.Add(new SpaceMouseUpdate { BindingType = BindingType.Axis, Index = i + 2 });
                     }
                     break;
@@ -46,15 +48,27 @@ namespace SpaceMouse_HidSharp
             return updates.ToArray();
         }
 
-        private bool AxisChanged(byte[] bytes, int index)
+        private int? GetAxisValue(byte[] bytes, int index)
         {
-            var offset = (index * 2) + 1;
+            var valueByteIndex = (index * 2) + 1;
+
             var previousState = _previousStates[bytes[0]];
-            if (previousState != null && bytes[offset] == previousState[offset] && bytes[offset + 1] == previousState[offset + 1])
+            if (previousState != null && bytes[valueByteIndex] == previousState[valueByteIndex] && bytes[valueByteIndex + 1] == previousState[valueByteIndex + 1])
             {
-                return false;
+                return null;
             }
-            return true;
+
+            var multiplierByteIndex = valueByteIndex + 1;
+            var valueByte = bytes[valueByteIndex];
+            var multiplierByte = bytes[multiplierByteIndex];
+
+            var isInverted = multiplierByte > 253;
+            var isAmplified = isInverted ? multiplierByte == 254 : multiplierByte == 1;
+
+            var value = isInverted ? 255 - valueByte : valueByte;
+            if (isAmplified) value += 255;
+            if (isInverted) value *= -1;
+            return value;
         }
     }
 }
