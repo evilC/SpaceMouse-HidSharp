@@ -91,14 +91,10 @@ namespace SpaceMouse_HidSharp
                                     if (byteCount > 0)
                                     {
                                         var updates = _updateProcessor.ProcessUpdate(inputReportBuffer, byteCount);
-                                        //string hexOfBytes = string.Join(" ", inputReportBuffer.Take(byteCount).Select(b => b.ToString("X2")));
-                                        //var hexOfBytes = "";
-                                        //var blah = inputReportBuffer.Take(byteCount);
-                                        //foreach (var foo in blah)
-                                        //{
-                                        //    hexOfBytes += foo.ToString("X2") + " ";
-                                        //}
-                                        //Console.WriteLine("  {0}", hexOfBytes);
+                                        foreach (var update in updates)
+                                        {
+                                            Console.WriteLine($"Type: {update.BindingType}, Index: {update.Index}, Value: {update.Value}");
+                                        }
                                     }
                                 }
                                 else

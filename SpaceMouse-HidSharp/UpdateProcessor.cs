@@ -25,8 +25,8 @@ namespace SpaceMouse_HidSharp
                     {
                         var value = GetAxisValue(bytes, i);
                         if (value == null) continue;
-                        Console.WriteLine($"Translation {i} changed to {value}");
-                        updates.Add(new SpaceMouseUpdate{BindingType = BindingType.Axis, Index = i});   // ToDo: Add value
+                        //Console.WriteLine($"Translation {i} changed to {value}");
+                        updates.Add(new SpaceMouseUpdate{BindingType = BindingType.Axis, Index = i, Value = (int)value});
                     }
                     break;
                 case 2:
@@ -35,8 +35,8 @@ namespace SpaceMouse_HidSharp
                     {
                         var value = GetAxisValue(bytes, i);
                         if (value == null) continue;
-                        Console.WriteLine($"Roatation {i} changed to {value}");
-                        updates.Add(new SpaceMouseUpdate { BindingType = BindingType.Axis, Index = i + 2 });
+                        //Console.WriteLine($"Roatation {i} changed to {value}");
+                        updates.Add(new SpaceMouseUpdate { BindingType = BindingType.Axis, Index = i + 2, Value = (int)value});
                     }
                     break;
                 case 3:
