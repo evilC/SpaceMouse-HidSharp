@@ -91,6 +91,7 @@ namespace SpaceMouse_HidSharp
                                     if (byteCount > 0)
                                     {
                                         var updates = _updateProcessor.ProcessUpdate(inputReportBuffer, byteCount);
+                                        if (updates == null) continue;
                                         foreach (var update in updates)
                                         {
                                             Console.WriteLine($"Type: {update.BindingType}, Index: {update.Index}, Value: {update.Value}");
